@@ -3,27 +3,18 @@ package
 	import aerys.minko.Minko;
 	import aerys.minko.render.Viewport;
 	import aerys.minko.render.effect.basic.BasicStyle;
-	import aerys.minko.render.effect.light.LightingStyle;
-	import aerys.minko.render.effect.lighting.LightingEffect;
 	import aerys.minko.render.effect.skinning.SkinningStyle;
-	import aerys.minko.render.renderer.state.TriangleCulling;
 	import aerys.minko.scene.node.camera.ArcBallCamera;
 	import aerys.minko.scene.node.group.Group;
 	import aerys.minko.scene.node.group.LoaderGroup;
 	import aerys.minko.scene.node.group.StyleGroup;
 	import aerys.minko.scene.node.group.TransformGroup;
 	import aerys.minko.scene.node.group.collada.ColladaGroup;
-	import aerys.minko.scene.node.light.AmbientLight;
-	import aerys.minko.scene.node.light.DirectionalLight;
 	import aerys.minko.type.animation.Animation;
 	import aerys.minko.type.log.DebugLevel;
 	import aerys.minko.type.math.ConstVector4;
-	import aerys.minko.type.math.Vector4;
-	import aerys.minko.type.parser.IParser3D;
 	import aerys.minko.type.parser.collada.ColladaParser;
-	import aerys.minko.type.parser.collada.Document;
 	import aerys.minko.type.skinning.SkinningMethod;
-	import aerys.monitor.Monitor;
 	
 	import flash.display.Sprite;
 	import flash.display.StageDisplayState;
@@ -39,14 +30,14 @@ package
 		[Embed("../assets/astroBoy_walk_Max.DAE", mimeType="application/octet-stream")]
 		private static const ASTROBOY_DAE	: Class;
 		
-		protected var _cursor				: Point;
+		protected var _viewport				: Viewport		= new Viewport(0, 0, true, 2);
+		protected var _camera				: ArcBallCamera	= new ArcBallCamera();
+		protected var _scene				: StyleGroup	= new StyleGroup(_camera);
 		
-		protected var _viewport				: Viewport;
-		protected var _scene				: Group;
-		protected var _camera				: ArcBallCamera;
+		protected var _walkAnimation		: Animation		= null;
 		
-		protected var _keyDowns				: Array;
-		protected var _walkAnimation		: Animation;
+		protected var _keyDowns				: Array			= new Array();
+		protected var _cursor				: Point			= new Point();
 		
 		public function Main()
 		{
@@ -62,44 +53,19 @@ package
 			LoaderGroup.registerParser('dae', new ColladaParser());
 			
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-			_cursor		= new Point();
-			_viewport	= new Viewport(0, 0, true, 2);
 			stage.addChild(_viewport);
 			
-			Minko.debugLevel = DebugLevel.DISABLED;
-			
-			initializeMonitor();
 			initScene();
 			initEventListeners();
 		}
 		
-		private function initializeMonitor() : void
-		{
-			var m : Monitor = Monitor.monitor;
-			
-			addChild(m);
-			m.visible = true;
-			
-			m.watch(_viewport, ["renderingTime", "drawingTime", "numTriangles", "sceneSize"]);
-		}
-		
 		protected function initScene() : void
 		{
-			_scene = new StyleGroup();
-			_scene.style.set(BasicStyle.DIFFUSE_COLOR, 0xffffffff)
-						.set(LightingStyle.LIGHT_ENABLED, true)
-						.set(BasicStyle.TRIANGLE_CULLING, TriangleCulling.DISABLED)
-						.set(SkinningStyle.METHOD, SkinningMethod.DUAL_QUATERNION);
+			_scene.style.set(BasicStyle.DIFFUSE_COLOR,	0xffffffff)
+						.set(SkinningStyle.METHOD, 		SkinningMethod.DUAL_QUATERNION);
 			
-			var light : DirectionalLight = new DirectionalLight(0xffffff, 0.6, 0, 0, new Vector4(0, 1, 1));
-			_scene.addChild(new AmbientLight());
-			_scene.addChild(light);
-			
-			// Camera
-			_camera = new ArcBallCamera();
+			// camera
 			_camera.distance = 30;
-			_camera.up.set(0, 1, 0);
-			_scene.addChild(_camera);
 			
 			// Load collada content and retrieve main animation.
 			var astroBoy	: ColladaGroup		= LoaderGroup.loadAsset(ASTROBOY_DAE)[0] as ColladaGroup;
@@ -130,14 +96,10 @@ package
 			_viewport.render(_scene);
 			
 			if (_keyDowns[Keyboard.UP])
-			{
 				_walkAnimation.step();
-			}
 			
 			if (_keyDowns[Keyboard.DOWN])
-			{
 				_walkAnimation.stepReverse();
-			}
 		}
 		
 		private function keyDownHandler(e : KeyboardEvent) : void
