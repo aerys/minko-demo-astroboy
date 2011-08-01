@@ -10,6 +10,7 @@ package
 	import aerys.minko.scene.node.group.StyleGroup;
 	import aerys.minko.scene.node.group.TransformGroup;
 	import aerys.minko.scene.node.group.collada.ColladaGroup;
+	import aerys.minko.scene.node.texture.ColorTexture;
 	import aerys.minko.type.animation.Animation;
 	import aerys.minko.type.log.DebugLevel;
 	import aerys.minko.type.math.ConstVector4;
@@ -61,8 +62,7 @@ package
 		
 		protected function initScene() : void
 		{
-			_scene.style.set(BasicStyle.DIFFUSE_COLOR,	0xffffffff)
-						.set(SkinningStyle.METHOD, 		SkinningMethod.DUAL_QUATERNION);
+			_scene.style.set(SkinningStyle.METHOD, 		SkinningMethod.DUAL_QUATERNION);
 			
 			// camera
 			_camera.distance = 30;
@@ -76,7 +76,7 @@ package
 			
 			_walkAnimation = astroBoy.getAnimationById('mergedAnimations');
 			_walkAnimation.playOn(astroBoy);
-			_scene.addChild(transformed);
+			_scene.addChild(new ColorTexture(0xffffff)).addChild(transformed);
 		}
 		
 		protected function initEventListeners() : void
@@ -99,7 +99,7 @@ package
 				_walkAnimation.step();
 			
 			if (_keyDowns[Keyboard.DOWN])
-				_walkAnimation.stepReverse();
+				_walkAnimation.step(-80);
 		}
 		
 		private function keyDownHandler(e : KeyboardEvent) : void
