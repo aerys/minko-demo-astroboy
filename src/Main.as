@@ -2,6 +2,7 @@ package
 {
 	import aerys.minko.render.Viewport;
 	import aerys.minko.render.effect.basic.BasicStyle;
+	import aerys.minko.render.effect.debug.DebugEffect;
 	import aerys.minko.render.effect.skinning.SkinningStyle;
 	import aerys.minko.scene.node.camera.ArcBallCamera;
 	import aerys.minko.scene.node.group.LoaderGroup;
@@ -55,6 +56,8 @@ package
 		
 		protected function initScene() : void
 		{
+			_viewport.defaultEffect = new DebugEffect();
+			
 			_scene.style.set(SkinningStyle.METHOD, 	SkinningMethod.DUAL_QUATERNION);
 						
 			// camera
@@ -64,7 +67,7 @@ package
 			_camera.rotation.x = -.4;
 			
 			// Load collada content and retrieve main animation.
-			var astroBoy	: ColladaGroup		= new LoaderGroup().loadAsset(ASTROBOY_DAE)[0]
+			var astroBoy	: ColladaGroup		= LoaderGroup.loadClass(ASTROBOY_DAE)[0]
 												  as ColladaGroup;
 			var transformed	: TransformGroup	= new TransformGroup(astroBoy);
 			
@@ -73,7 +76,7 @@ package
 			
 			_walkAnimation = astroBoy.getAnimationById('mergedAnimations');
 			_walkAnimation.playOn(astroBoy);
-			_scene.addChild(new ColorTexture(0xffffff)).addChild(transformed);
+			_scene.addChild(transformed);
 		}
 		
 		protected function initEventListeners() : void
