@@ -11,7 +11,9 @@ package
 	import aerys.minko.scene.node.group.TransformGroup;
 	import aerys.minko.scene.node.group.collada.ColladaGroup;
 	import aerys.minko.scene.node.texture.ColorTexture;
-	import aerys.minko.type.animation.Animation;
+	import aerys.minko.type.animation.AbstractAnimation;
+	import aerys.minko.type.animation.ManualAnimation;
+	import aerys.minko.type.animation.SynchronizedAnimation;
 	import aerys.minko.type.log.DebugLevel;
 	import aerys.minko.type.math.ConstVector4;
 	import aerys.minko.type.parser.collada.ColladaParser;
@@ -35,7 +37,7 @@ package
 		protected var _camera				: ArcBallCamera	= new ArcBallCamera();
 		protected var _scene				: StyleGroup	= new StyleGroup(_camera);
 		
-		protected var _walkAnimation		: Animation		= null;
+		protected var _walkAnimation		: SynchronizedAnimation	= null;
 		
 		protected var _keyDowns				: Array			= new Array();
 		protected var _cursor				: Point			= new Point();
@@ -94,12 +96,7 @@ package
 		protected function enterFrameHandler(e : Event) : void
 		{
 			_viewport.render(_scene);
-			
-			if (_keyDowns[Keyboard.UP])
-				_walkAnimation.step();
-			
-			if (_keyDowns[Keyboard.DOWN])
-				_walkAnimation.step(-80);
+			_walkAnimation.tick();
 		}
 		
 		private function keyDownHandler(e : KeyboardEvent) : void
