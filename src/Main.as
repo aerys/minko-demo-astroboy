@@ -1,16 +1,15 @@
 package
 {
 	import aerys.minko.render.Viewport;
-	import aerys.minko.render.effect.basic.BasicStyle;
+	import aerys.minko.render.effect.basic.BasicEffect;
 	import aerys.minko.render.effect.debug.DebugEffect;
 	import aerys.minko.render.effect.skinning.SkinningStyle;
 	import aerys.minko.scene.node.camera.ArcBallCamera;
+	import aerys.minko.scene.node.group.Group;
 	import aerys.minko.scene.node.group.LoaderGroup;
 	import aerys.minko.scene.node.group.StyleGroup;
 	import aerys.minko.scene.node.group.TransformGroup;
-	import aerys.minko.scene.node.group.collada.ColladaGroup;
 	import aerys.minko.scene.node.texture.ColorTexture;
-	import aerys.minko.type.animation.SynchronizedAnimation;
 	import aerys.minko.type.math.ConstVector4;
 	import aerys.minko.type.parser.collada.ColladaParser;
 	import aerys.minko.type.skinning.SkinningMethod;
@@ -26,11 +25,9 @@ package
 		[Embed("../assets/astroBoy_walk_Max.DAE", mimeType="application/octet-stream")]
 		private static const ASTROBOY_DAE	: Class;
 		
-		protected var _viewport				: Viewport				= new Viewport(0, 0, true, 2);
+		protected var _viewport				: Viewport				= new Viewport(2);
 		protected var _camera				: ArcBallCamera			= new ArcBallCamera();
 		protected var _scene				: StyleGroup			= new StyleGroup(_camera);
-		
-		protected var _walkAnimation		: SynchronizedAnimation	= null;
 		
 		protected var _cursor				: Point					= new Point();
 		
@@ -56,10 +53,11 @@ package
 		
 		protected function initScene() : void
 		{
-			_viewport.defaultEffect = new DebugEffect();
+			_viewport.defaultEffect = new BasicEffect();
 			
 			_scene.style.set(SkinningStyle.METHOD, 	SkinningMethod.DUAL_QUATERNION);
-						
+			_scene.addChild(new ColorTexture(0x0000ff));
+			
 			// camera
 			_camera.distance = 10;
 			_camera.lookAt.y = 3;
@@ -67,15 +65,12 @@ package
 			_camera.rotation.x = -.4;
 			
 			// Load collada content and retrieve main animation.
-			var astroBoy	: ColladaGroup		= LoaderGroup.loadClass(ASTROBOY_DAE)[0]
-												  as ColladaGroup;
+			var astroBoy	: Group				= LoaderGroup.loadClass(ASTROBOY_DAE)[0];
 			var transformed	: TransformGroup	= new TransformGroup(astroBoy);
 			
 			transformed.transform.appendRotation(- Math.PI / 2, ConstVector4.X_AXIS) // Z_UP to Y_UP
 								 .appendScale(1, 1, -1); // right handed to left handed
 			
-			_walkAnimation = astroBoy.getAnimationById('mergedAnimations');
-			_walkAnimation.playOn(astroBoy);
 			_scene.addChild(transformed);
 		}
 		
@@ -88,7 +83,6 @@ package
 		protected function enterFrameHandler(e : Event) : void
 		{
 			_viewport.render(_scene);
-			_walkAnimation.tick();
 		}
 		
 		private function mouseMoveHandler(event : MouseEvent) : void
