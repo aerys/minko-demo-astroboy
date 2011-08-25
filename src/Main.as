@@ -53,10 +53,9 @@ package
 		
 		protected function initScene() : void
 		{
-			_viewport.defaultEffect = new BasicEffect();
+			_viewport.defaultEffect = new DebugEffect();
 			
 			_scene.style.set(SkinningStyle.METHOD, 	SkinningMethod.DUAL_QUATERNION);
-			_scene.addChild(new ColorTexture(0x0000ff));
 			
 			// camera
 			_camera.distance = 10;
