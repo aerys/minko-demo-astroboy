@@ -1,18 +1,16 @@
 package
 {
 	import aerys.minko.render.Viewport;
-	import aerys.minko.render.effect.basic.BasicEffect;
+	import aerys.minko.render.effect.animation.AnimationStyle;
 	import aerys.minko.render.effect.debug.DebugEffect;
-	import aerys.minko.render.effect.skinning.SkinningStyle;
 	import aerys.minko.scene.node.camera.ArcBallCamera;
 	import aerys.minko.scene.node.group.Group;
 	import aerys.minko.scene.node.group.LoaderGroup;
 	import aerys.minko.scene.node.group.StyleGroup;
 	import aerys.minko.scene.node.group.TransformGroup;
-	import aerys.minko.scene.node.texture.ColorTexture;
+	import aerys.minko.type.animation.AnimationMethod;
 	import aerys.minko.type.math.ConstVector4;
 	import aerys.minko.type.parser.collada.ColladaParser;
-	import aerys.minko.type.skinning.SkinningMethod;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -55,7 +53,7 @@ package
 		{
 			_viewport.defaultEffect = new DebugEffect();
 			
-			_scene.style.set(SkinningStyle.METHOD, 	SkinningMethod.DUAL_QUATERNION);
+			_scene.style.set(AnimationStyle.METHOD, 	AnimationMethod.DUAL_QUATERNION_SKINNING);
 			
 			// camera
 			_camera.distance = 10;
