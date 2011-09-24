@@ -3,6 +3,7 @@ package
 	import aerys.minko.render.Viewport;
 	import aerys.minko.render.effect.animation.AnimationStyle;
 	import aerys.minko.render.effect.basic.BasicStyle;
+	import aerys.minko.scene.node.IScene;
 	import aerys.minko.scene.node.camera.ArcBallCamera;
 	import aerys.minko.scene.node.group.Group;
 	import aerys.minko.scene.node.group.LoaderGroup;
@@ -22,9 +23,10 @@ package
 	
 	public class Main extends Sprite
 	{
-		// OK avec skinning/anims
 		[Embed("../assets/astroboy.dae", mimeType="application/octet-stream")]
-		private static const ASTROBOY_DAE	: Class;
+		private static const ASTROBOY_DAE		: Class;
+		[Embed("../assets/astroboy.jpg")]
+		private static const ASTROBOY_DIFFUSE	: Class;
 		
 		protected var _viewport	: Viewport		= new Viewport(2);
 		protected var _camera	: ArcBallCamera	= new ArcBallCamera();
@@ -64,9 +66,12 @@ package
 			
 			var options	: ParserOptions	= new ParserOptions();
 			
-			options.textureFilenameFunction = function(filename : String) : String
+			options.textureFunction = function(filename : String) : IScene
 			{
-				return "../assets/astroboy.jpg";
+				// there is only one texture in the DAE so
+				// we directly output the embed one
+				
+				return LoaderGroup.loadClass(ASTROBOY_DIFFUSE)[0];
 			}
 			
 			// Load collada content and retrieve main animation.
