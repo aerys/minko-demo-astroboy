@@ -2,14 +2,17 @@ package
 {
 	import aerys.minko.render.Viewport;
 	import aerys.minko.render.effect.animation.AnimationStyle;
-	import aerys.minko.render.effect.debug.DebugEffect;
+	import aerys.minko.render.effect.basic.BasicStyle;
 	import aerys.minko.scene.node.camera.ArcBallCamera;
 	import aerys.minko.scene.node.group.Group;
 	import aerys.minko.scene.node.group.LoaderGroup;
 	import aerys.minko.scene.node.group.StyleGroup;
 	import aerys.minko.scene.node.group.TransformGroup;
+	import aerys.minko.scene.node.mesh.IMesh;
 	import aerys.minko.type.animation.AnimationMethod;
+	import aerys.minko.type.enum.Blending;
 	import aerys.minko.type.math.ConstVector4;
+	import aerys.minko.type.parser.ParserOptions;
 	import aerys.minko.type.parser.collada.ColladaParser;
 	
 	import flash.display.Sprite;
@@ -20,14 +23,14 @@ package
 	public class Main extends Sprite
 	{
 		// OK avec skinning/anims
-		[Embed("../assets/astroBoy_walk_Max.DAE", mimeType="application/octet-stream")]
+		[Embed("../assets/astroboy.dae", mimeType="application/octet-stream")]
 		private static const ASTROBOY_DAE	: Class;
 		
-		protected var _viewport				: Viewport				= new Viewport(2);
-		protected var _camera				: ArcBallCamera			= new ArcBallCamera();
-		protected var _scene				: StyleGroup			= new StyleGroup(_camera);
+		protected var _viewport	: Viewport		= new Viewport(2);
+		protected var _camera	: ArcBallCamera	= new ArcBallCamera();
+		protected var _scene	: StyleGroup	= new StyleGroup(_camera);
 		
-		protected var _cursor				: Point					= new Point();
+		protected var _cursor	: Point			= new Point();
 		
 		public function Main()
 		{
@@ -40,7 +43,7 @@ package
 		protected function init(e : Event = null) : void
 		{
 			// register collada parser
-			LoaderGroup.registerParser('dae', new ColladaParser());
+			LoaderGroup.registerParser('dae', ColladaParser);
 			
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			stage.addChild(_viewport);
@@ -51,8 +54,6 @@ package
 		
 		protected function initScene() : void
 		{
-			_viewport.defaultEffect = new DebugEffect();
-			
 			_scene.style.set(AnimationStyle.METHOD, 	AnimationMethod.DUAL_QUATERNION_SKINNING);
 			
 			// camera
@@ -61,16 +62,24 @@ package
 			_camera.rotation.y = .4;
 			_camera.rotation.x = -.4;
 			
-			// Load collada content and retrieve main animation.
-			var astroBoy	: Group				= LoaderGroup.loadClass(ASTROBOY_DAE)[0];
-			var transformed	: TransformGroup	= new TransformGroup(astroBoy);
+			var options	: ParserOptions	= new ParserOptions();
 			
-			transformed.transform.appendRotation(- Math.PI / 2, ConstVector4.X_AXIS) // Z_UP to Y_UP
-								 .appendScale(1, 1, -1); // right handed to left handed
+			options.textureFilenameFunction = function(filename : String) : String
+			{
+				return "../assets/astroboy.jpg";
+			}
+			
+			// Load collada content and retrieve main animation.
+			var astroBoy	: Group				= LoaderGroup.loadClass(ASTROBOY_DAE, options);
+			var transformed	: TransformGroup	= new TransformGroup(astroBoy);
+		
+			transformed.transform
+				.appendRotation(- Math.PI / 2, ConstVector4.X_AXIS) // Z_UP to Y_UP
+				.appendScale(1, 1, -1); // right handed to left handed
 			
 			_scene.addChild(transformed);
 		}
-		
+	
 		protected function initEventListeners() : void
 		{
 			stage.addEventListener(Event.ENTER_FRAME, enterFrameHandler);
