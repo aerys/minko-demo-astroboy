@@ -2,16 +2,13 @@ package
 {
 	import aerys.minko.render.Viewport;
 	import aerys.minko.render.effect.animation.AnimationStyle;
-	import aerys.minko.render.effect.basic.BasicStyle;
 	import aerys.minko.scene.node.IScene;
 	import aerys.minko.scene.node.camera.ArcBallCamera;
 	import aerys.minko.scene.node.group.Group;
 	import aerys.minko.scene.node.group.LoaderGroup;
 	import aerys.minko.scene.node.group.StyleGroup;
 	import aerys.minko.scene.node.group.TransformGroup;
-	import aerys.minko.scene.node.mesh.IMesh;
 	import aerys.minko.type.animation.AnimationMethod;
-	import aerys.minko.type.enum.Blending;
 	import aerys.minko.type.math.ConstVector4;
 	import aerys.minko.type.parser.ParserOptions;
 	import aerys.minko.type.parser.collada.ColladaParser;
@@ -74,13 +71,13 @@ package
 				return LoaderGroup.loadClass(ASTROBOY_DIFFUSE)[0];
 			}
 			
-			// Load collada content and retrieve main animation.
+			// load collada content and retrieve main animation
 			var astroBoy	: Group				= LoaderGroup.loadClass(ASTROBOY_DAE, options);
 			var transformed	: TransformGroup	= new TransformGroup(astroBoy);
 		
 			transformed.transform
-				.appendRotation(- Math.PI / 2, ConstVector4.X_AXIS) // Z_UP to Y_UP
-				.appendScale(1, 1, -1); // right handed to left handed
+				.appendRotation(- Math.PI / 2, ConstVector4.X_AXIS)	// Z_UP to Y_UP
+				.appendScale(1, 1, -1);								// right handed to left handed
 			
 			_scene.addChild(transformed);
 		}
