@@ -20,7 +20,9 @@ package
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.net.URLRequest;
 	
+	[SWF(width="1024",height="768")]
 	public class Main extends Sprite
 	{
 		[Embed("../assets/astroboy.dae", mimeType="application/octet-stream")]
@@ -48,6 +50,7 @@ package
 			LoaderGroup.registerParser('dae', ColladaParser);
 			
 			removeEventListener(Event.ADDED_TO_STAGE, init);
+			stage.frameRate = 30.;
 			stage.addChild(_viewport);
 			
 			initScene();
@@ -66,13 +69,16 @@ package
 			
 			var options	: ParserOptions	= new ParserOptions();
 			
-			options.textureFunction = function(filename : String) : IScene
+			options.loadTextures = true;
+			options.replaceNodeFunction = function(node : IScene) : IScene
 			{
-				// there is only one texture in the DAE so
-				// we directly output the embed one
-				
+				trace(node);
+				return node;
+			};
+			options.loadFunction = function(request : URLRequest, options : ParserOptions) : IScene
+			{
 				return LoaderGroup.loadClass(ASTROBOY_DIFFUSE)[0];
-			}
+			};
 			
 			// Load collada content and retrieve main animation.
 			var astroBoy	: Group				= LoaderGroup.loadClass(ASTROBOY_DAE, options);
