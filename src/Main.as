@@ -19,7 +19,6 @@ package
 	import flash.geom.Point;
 	import flash.net.URLRequest;
 	
-	[SWF(width="1024",height="768")]
 	public class Main extends Sprite
 	{
 		[Embed("../assets/astroboy.dae", mimeType="application/octet-stream")]
@@ -67,11 +66,6 @@ package
 			var options	: ParserOptions	= new ParserOptions();
 			
 			options.loadTextures = true;
-			options.replaceNodeFunction = function(node : IScene) : IScene
-			{
-				trace(node);
-				return node;
-			};
 			options.loadFunction = function(request : URLRequest, options : ParserOptions) : IScene
 			{
 				return LoaderGroup.loadClass(ASTROBOY_DIFFUSE)[0];
